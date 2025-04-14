@@ -24,6 +24,11 @@ public class MarketDTO {
         this.editedByUserId = editedByUserId;
     }
 
+    public MarketDTO(Integer id, String marketCode) {
+        this.id = id;
+        this.marketCode = marketCode;
+    }
+
     // Getters and Setters
 
     public Integer getId() {

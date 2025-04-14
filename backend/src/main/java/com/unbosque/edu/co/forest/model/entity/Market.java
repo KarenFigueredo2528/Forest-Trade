@@ -35,6 +35,11 @@ public class Market {
     public Market() {
     }
 
+    public Market(Integer id, String marketCode) {
+        this.id = id;
+        this.marketCode = marketCode;
+    }
+
     public Market(Integer id, String marketCode, LocalTime openTime, LocalTime closeTime, List<String> businessDays, User editedBy) {
         this.id = id;
         this.marketCode = marketCode;
