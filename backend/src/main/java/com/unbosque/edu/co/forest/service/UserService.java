@@ -1,40 +1,50 @@
 package com.unbosque.edu.co.forest.service;
 
 import com.unbosque.edu.co.forest.model.dto.UserDTO;
-import com.unbosque.edu.co.forest.model.dataMapper.impl.UserMapper;
 import com.unbosque.edu.co.forest.model.entity.User;
-import com.unbosque.edu.co.forest.model.repository.UserRepository;
+import com.unbosque.edu.co.forest.repository.UserRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
 
     private final UserRepository userRepository;
-    private final UserMapper userMapper;
+    private final ModelMapper modelMapper;
 
     @Autowired
-    public UserService(UserRepository userRepository, UserMapper userMapper) {
+    public UserService(UserRepository userRepository, ModelMapper modelMapper) {
         this.userRepository = userRepository;
-        this.userMapper = userMapper;
+        this.modelMapper = modelMapper;
     }
 
-    public UserDTO getUserById(Long id) {
-        Optional<User> user = userRepository.findById(id);
-        return user.map(userMapper::toDTO).orElse(null);
+    public UserDTO getUserById(Integer id) {
+       return userRepository.findById(id)
+                .map(user -> modelMapper.map(user, UserDTO.class))
+               .orElseThrow(() -> new RuntimeException("User not found"));
+    }
+
+    public UserDTO getUserByEmail(String email) {
+        return userRepository.findUserByEmail(email)
+                .map(user -> modelMapper.map(user, UserDTO.class))
+                .orElseThrow(() -> new RuntimeException("User not found"));
     }
 
     public List<UserDTO> getAllUsers() {
-        List<User> users = userRepository.findAll();
-        return userMapper.toDTOList(users);
+        return userRepository
+                .findAll()
+                .stream()
+                .map(user -> modelMapper.map(user, UserDTO.class))
+                .collect(Collectors.toList());
     }
 
     public UserDTO createUser(UserDTO userDTO) {
-        User user = userMapper.toEntity(userDTO);
+        User user = modelMapper.map(userDTO, User.class);
         User savedUser = userRepository.save(user);
-        return userMapper.toDTO(savedUser);
+        return modelMapper.map(savedUser, UserDTO.class);
     }
 }

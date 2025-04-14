@@ -1,41 +1,59 @@
 package com.unbosque.edu.co.forest.model.dto;
 
 import com.unbosque.edu.co.forest.model.enums.AccountStatus;
-import com.unbosque.edu.co.forest.model.enums.Role;
 import com.unbosque.edu.co.forest.model.enums.OrderType;
+import com.unbosque.edu.co.forest.model.enums.Role;
 
 import java.time.LocalDateTime;
 
 public class UserDTO {
 
-    private Long userId;
+    private Integer id;
     private String name;
     private String email;
     private Role role;
-    private String phoneNumber;
+    private String phone;
     private AccountStatus accountStatus;
-    private LocalDateTime creationDate;
-    private LocalDateTime lastLogin;
-
-    // Role-specific fields
-    private Double commissionPercentage;
+    private LocalDateTime createdAt;
+    private LocalDateTime lastAccess;
+    private Double commissionRate;
     private Boolean hasSubscription;
     private String alpacaStatus;
     private String alpacaAccountId;
-    private Integer dailyOperationLimit;
-    private OrderType predefinedOrderType;
+    private Integer dailyOrderLimit;
+    private OrderType defaultOrderType;
 
-    // Constructor vacío
-    public UserDTO() {}
-
-    // Getters y Setters
-
-    public Long getUserId() {
-        return userId;
+    public UserDTO() {
     }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
+    public UserDTO(Integer id, String name, String email, Role role, String phone,
+                   AccountStatus accountStatus, LocalDateTime createdAt, LocalDateTime lastAccess,
+                   Double commissionRate, Boolean hasSubscription, String alpacaStatus,
+                   String alpacaAccountId, Integer dailyOrderLimit, OrderType defaultOrderType) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.role = role;
+        this.phone = phone;
+        this.accountStatus = accountStatus;
+        this.createdAt = createdAt;
+        this.lastAccess = lastAccess;
+        this.commissionRate = commissionRate;
+        this.hasSubscription = hasSubscription;
+        this.alpacaStatus = alpacaStatus;
+        this.alpacaAccountId = alpacaAccountId;
+        this.dailyOrderLimit = dailyOrderLimit;
+        this.defaultOrderType = defaultOrderType;
+    }
+
+    // Getters and setters...
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -62,12 +80,12 @@ public class UserDTO {
         this.role = role;
     }
 
-    public String getPhoneNumber() {
-        return phoneNumber;
+    public String getPhone() {
+        return phone;
     }
 
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 
     public AccountStatus getAccountStatus() {
@@ -78,28 +96,28 @@ public class UserDTO {
         this.accountStatus = accountStatus;
     }
 
-    public LocalDateTime getCreationDate() {
-        return creationDate;
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
     }
 
-    public void setCreationDate(LocalDateTime creationDate) {
-        this.creationDate = creationDate;
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 
-    public LocalDateTime getLastLogin() {
-        return lastLogin;
+    public LocalDateTime getLastAccess() {
+        return lastAccess;
     }
 
-    public void setLastLogin(LocalDateTime lastLogin) {
-        this.lastLogin = lastLogin;
+    public void setLastAccess(LocalDateTime lastAccess) {
+        this.lastAccess = lastAccess;
     }
 
-    public Double getCommissionPercentage() {
-        return commissionPercentage;
+    public Double getCommissionRate() {
+        return commissionRate;
     }
 
-    public void setCommissionPercentage(Double commissionPercentage) {
-        this.commissionPercentage = commissionPercentage;
+    public void setCommissionRate(Double commissionRate) {
+        this.commissionRate = commissionRate;
     }
 
     public Boolean getHasSubscription() {
@@ -126,19 +144,19 @@ public class UserDTO {
         this.alpacaAccountId = alpacaAccountId;
     }
 
-    public Integer getDailyOperationLimit() {
-        return dailyOperationLimit;
+    public Integer getDailyOrderLimit() {
+        return dailyOrderLimit;
     }
 
-    public void setDailyOperationLimit(Integer dailyOperationLimit) {
-        this.dailyOperationLimit = dailyOperationLimit;
+    public void setDailyOrderLimit(Integer dailyOrderLimit) {
+        this.dailyOrderLimit = dailyOrderLimit;
     }
 
-    public OrderType getPredefinedOrderType() {
-        return predefinedOrderType;
+    public OrderType getDefaultOrderType() {
+        return defaultOrderType;
     }
 
-    public void setPredefinedOrderType(OrderType predefinedOrderType) {
-        this.predefinedOrderType = predefinedOrderType;
+    public void setDefaultOrderType(OrderType defaultOrderType) {
+        this.defaultOrderType = defaultOrderType;
     }
 }
