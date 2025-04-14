@@ -5,24 +5,38 @@ public class StockDTO {
 
     private String symbol;
     private String stockName;
+    private float change;
     private String sector;
+    private String industry;
     private float currentPrice;
     private float volume;
     private float marketCapitalization;
     private String status;
     private MarketDTO market;
 
+
     public StockDTO() {}
 
-    public StockDTO(String symbol, String stockName, String sector, float currentPrice, float volume, float marketCapitalization, String status, MarketDTO market) {
+
+    public StockDTO(String symbol, String stockName, float change, String sector, String industry, float currentPrice, float volume, float marketCapitalization, String status, MarketDTO market) {
         this.symbol = symbol;
         this.stockName = stockName;
+        this.change = change;
         this.sector = sector;
+        this.industry = industry;
         this.currentPrice = currentPrice;
         this.volume = volume;
         this.marketCapitalization = marketCapitalization;
         this.status = status;
         this.market = market;
+    }
+
+    public String getIndustry() {
+        return industry;
+    }
+
+    public void setIndustry(String industry) {
+        this.industry = industry;
     }
 
     public String getSymbol() {
@@ -87,5 +101,13 @@ public class StockDTO {
 
     public void setMarket(MarketDTO market) {
         this.market = market;
+    }
+
+    public float getChange() {
+        return change;
+    }
+
+    public void setChange(float change) {
+        this.change = change;
     }
 }
