@@ -1,6 +1,6 @@
 package com.unbosque.edu.co.forest.controller;
 
-import com.unbosque.edu.co.forest.model.Usuario;
+import com.unbosque.edu.co.forest.model.entity.User;
 import com.unbosque.edu.co.forest.service.UsuarioService;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,17 +18,17 @@ public class UsuarioController {
     }
 
     @GetMapping
-    public List<Usuario> obtenerUsuarios() {
+    public List<User> obtenerUsuarios() {
         return service.listarTodos();
     }
 
     @PostMapping
-    public Usuario registrarUsuario(@RequestBody Usuario usuario) {
-        return service.crearUsuario(usuario);
+    public User registrarUsuario(@RequestBody User user) {
+        return service.crearUsuario(user);
     }
 
     @GetMapping("/buscar")
-    public Usuario buscarPorCorreo(@RequestParam String correo) {
+    public User buscarPorCorreo(@RequestParam String correo) {
         return service.buscarPorCorreo(correo);
     }
 
