@@ -6,73 +6,84 @@ import com.unbosque.edu.co.forest.model.enums.AccountStatus;
 import com.unbosque.edu.co.forest.model.enums.Role;
 import com.unbosque.edu.co.forest.model.enums.OrderType;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "users")
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long userId;
+    @Column(name = "user_id")
+    private Integer id;
 
-    @Column(nullable = false, length = 100)
+    @Column(name = "name", nullable = false, length = 100)
     private String name;
 
-    @Column(nullable = false, unique = true, length = 100)
+    @Column(name = "email", nullable = false, unique = true, length = 100)
     private String email;
 
-    @Column(nullable = false, length = 255)
+    @Column(name = "password_hash", nullable = false, length = 255)
     private String passwordHash;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
+    @Column(name = "role_user", nullable = false)
     private Role role;
 
-    @Column(length = 20)
-    private String phoneNumber;
+    @Column(name = "phone", length = 20)
+    private String phone;
 
     @Enumerated(EnumType.STRING)
-    @Column(length = 20)
-    private AccountStatus accountStatus;
+    @Column(name = "account_status", nullable = false)
+    private AccountStatus accountStatus = AccountStatus.ACTIVE;
+
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+
+    @Column(name = "last_access")
+    private LocalDateTime lastAccess;
+
 
     // Role-specific attributes
-    private Double commissionPercentage;
+    @Column(name = "commission_rate", precision = 5, scale = 2)
+    private Double commissionRate;
 
+    @Column(name = "has_subscription")
     private Boolean hasSubscription = false;
 
+    @Column(name = "alpaca_status", length = 30)
     private String alpacaStatus;
 
+    @Column(name = "alpaca_account_id", length = 100)
     private String alpacaAccountId;
 
-    private Integer dailyOperationLimit = 0;
+    @Column(name = "daily_order_limit")
+    private Integer dailyOrderLimit = 0;
 
     @Enumerated(EnumType.STRING)
-    @Column(length = 30)
-    private OrderType predefinedOrderType;
+    @Column(name = "default_order_type")
+    private OrderType defaultOrderType;
 
     // Constructors
-    public User() {}
+    public User() {
+    }
 
-    public User(Long userId, String name, String email, String passwordHash, Role role, String phoneNumber, Double commissionPercentage, Boolean hasSubscription, String alpacaStatus, String alpacaAccountId, Integer dailyOperationLimit, OrderType predefinedOrderType) {
-        this.userId = userId;
+    public User(Integer id, String name, String email, String passwordHash, Role role, String phone, LocalDateTime createdAt, AccountStatus accountStatus, LocalDateTime lastAccess, Double commissionRate, Boolean hasSubscription, String alpacaStatus, String alpacaAccountId, Integer dailyOrderLimit, OrderType defaultOrderType) {
+        this.id = id;
         this.name = name;
         this.email = email;
         this.passwordHash = passwordHash;
         this.role = role;
-        this.phoneNumber = phoneNumber;
-        this.commissionPercentage = commissionPercentage;
+        this.phone = phone;
+        this.createdAt = createdAt;
+        this.accountStatus = accountStatus;
+        this.lastAccess = lastAccess;
+        this.commissionRate = commissionRate;
         this.hasSubscription = hasSubscription;
         this.alpacaStatus = alpacaStatus;
         this.alpacaAccountId = alpacaAccountId;
-        this.dailyOperationLimit = dailyOperationLimit;
-        this.predefinedOrderType = predefinedOrderType;
-    }
-
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
+        this.dailyOrderLimit = dailyOrderLimit;
+        this.defaultOrderType = defaultOrderType;
     }
 
     public String getName() {
@@ -81,6 +92,14 @@ public class User {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public String getEmail() {
@@ -107,20 +126,44 @@ public class User {
         this.role = role;
     }
 
-    public String getPhoneNumber() {
-        return phoneNumber;
+    public String getPhone() {
+        return phone;
     }
 
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 
-    public Double getCommissionPercentage() {
-        return commissionPercentage;
+    public AccountStatus getAccountStatus() {
+        return accountStatus;
     }
 
-    public void setCommissionPercentage(Double commissionPercentage) {
-        this.commissionPercentage = commissionPercentage;
+    public void setAccountStatus(AccountStatus accountStatus) {
+        this.accountStatus = accountStatus;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getLastAccess() {
+        return lastAccess;
+    }
+
+    public void setLastAccess(LocalDateTime lastAccess) {
+        this.lastAccess = lastAccess;
+    }
+
+    public Double getCommissionRate() {
+        return commissionRate;
+    }
+
+    public void setCommissionRate(Double commissionRate) {
+        this.commissionRate = commissionRate;
     }
 
     public Boolean getHasSubscription() {
@@ -147,19 +190,19 @@ public class User {
         this.alpacaAccountId = alpacaAccountId;
     }
 
-    public Integer getDailyOperationLimit() {
-        return dailyOperationLimit;
+    public Integer getDailyOrderLimit() {
+        return dailyOrderLimit;
     }
 
-    public void setDailyOperationLimit(Integer dailyOperationLimit) {
-        this.dailyOperationLimit = dailyOperationLimit;
+    public void setDailyOrderLimit(Integer dailyOrderLimit) {
+        this.dailyOrderLimit = dailyOrderLimit;
     }
 
-    public OrderType getPredefinedOrderType() {
-        return predefinedOrderType;
+    public OrderType getDefaultOrderType() {
+        return defaultOrderType;
     }
 
-    public void setPredefinedOrderType(OrderType predefinedOrderType) {
-        this.predefinedOrderType = predefinedOrderType;
+    public void setDefaultOrderType(OrderType defaultOrderType) {
+        this.defaultOrderType = defaultOrderType;
     }
 }
