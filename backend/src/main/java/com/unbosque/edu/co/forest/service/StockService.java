@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class StockService {
@@ -58,7 +57,7 @@ public class StockService {
                         && Boolean.TRUE.equals(asset.get("tradable"))
                         && Arrays.asList("NASDAQ", "NYSE", "AMEX").contains(asset.get("exchange")))
                 .limit(10) // Para pruebas solo unos cuantos
-                .collect(Collectors.toList());
+                .toList();
 
         List<StockDTO> result = new ArrayList<>();
 
