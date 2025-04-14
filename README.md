@@ -36,14 +36,16 @@ cd backend
 ./mvnw spring-boot:run
 
 Esto inicia el backend en:
-http://localhost:8080/api/usuarios
+http://localhost:8080/
 
 🔌 Endpoints disponibles:
-GET /api/usuarios → Listar usuarios
+GET /api/users → Listar usuarios
 
-POST /api/usuarios → Crear nuevo usuario
+POST /api/users → Crear nuevo usuario
 
-GET /api/usuarios/buscar?correo=... → Buscar usuario por correo
+GET /api/users/search?email=... → Buscar usuario por correo
+
+GET /api/stocks -> Listar acciones
 
 # Entrar a la carpeta del frontend
 cd frontend
