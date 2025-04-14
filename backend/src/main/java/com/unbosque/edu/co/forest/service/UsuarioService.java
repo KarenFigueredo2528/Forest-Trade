@@ -1,7 +1,7 @@
 package com.unbosque.edu.co.forest.service;
 
-import com.unbosque.edu.co.forest.model.Usuario;
-import com.unbosque.edu.co.forest.repository.UsuarioRepository;
+import com.unbosque.edu.co.forest.model.entity.User;
+import com.unbosque.edu.co.forest.model.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -9,21 +9,21 @@ import java.util.List;
 @Service
 public class UsuarioService {
 
-    private final UsuarioRepository repository;
+    private final UserRepository repository;
 
-    public UsuarioService(UsuarioRepository repository) {
+    public UsuarioService(UserRepository repository) {
         this.repository = repository;
     }
 
-    public List<Usuario> listarTodos() {
+    public List<User> listarTodos() {
         return repository.findAll();
     }
 
-    public Usuario crearUsuario(Usuario usuario) {
-        return repository.save(usuario);
+    public User crearUsuario(User user) {
+        return repository.save(user);
     }
 
-    public Usuario buscarPorCorreo(String correo) {
+    public User buscarPorCorreo(String correo) {
         return repository.findByCorreo(correo);
     }
 }
