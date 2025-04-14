@@ -17,8 +17,6 @@ import java.util.*;
 @Service
 public class StockService {
 
-    @Value("${alpaca.market.url}")
-    private String marketBaseUrl;
 
     @Value("${alpaca.broker.url}")
     private String brokerBaseUrl;
@@ -30,16 +28,13 @@ public class StockService {
     private String fmpApiKey;
 
     private final RestTemplate brokerRestTemplate;
-    private final RestTemplate marketRestTemplate;
     private final MarketRepository marketRepository;
     private final RestTemplate fmpRestTemplate;
     private final ObjectMapper objectMapper;
 
     public StockService(@Qualifier("brokerRestTemplate") RestTemplate brokerRestTemplate,
-                        @Qualifier("marketRestTemplate") RestTemplate marketRestTemplate,
                         MarketRepository marketRepository, ObjectMapper objectMapper) {
         this.brokerRestTemplate = brokerRestTemplate;
-        this.marketRestTemplate = marketRestTemplate;
         this.marketRepository = marketRepository;
         this.objectMapper = objectMapper;
         this.fmpRestTemplate = new RestTemplate();
@@ -56,53 +51,59 @@ public class StockService {
                 .filter(asset -> "active".equals(asset.get("status"))
                         && Boolean.TRUE.equals(asset.get("tradable"))
                         && Arrays.asList("NASDAQ", "NYSE", "AMEX").contains(asset.get("exchange")))
-                .limit(10) // Para pruebas solo unos cuantos
+                .limit(10)
                 .toList();
 
-        List<StockDTO> result = new ArrayList<>();
+        List<String> symbols = filteredAssets.stream()
+                .map(asset -> (String) asset.get("symbol"))
+                .toList();
 
+
+        // 🔹 2. Obtener datos de FMP (una sola vez)
+        Map<String, Object>[] profiles = fmpRestTemplate.getForObject(
+                fmpApiUrl + String.join(",", symbols) + "?&apikey=" + fmpApiKey,
+                Map[].class
+        );
+
+        // Mapear perfiles por símbolo
+        Map<String, Map<String, Object>> profileMap = new HashMap<>();
+        if (profiles != null) {
+            for (Map<String, Object> p : profiles) {
+                profileMap.put((String) p.get("symbol"), p);
+            }
+        }
+
+        // 🔹 3. Construir DTOs
+        List<StockDTO> result = new ArrayList<>();
         for (Map<String, Object> asset : filteredAssets) {
             String symbol = (String) asset.get("symbol");
             String name = (String) asset.get("name");
             String status = (String) asset.get("status");
             String exchange = (String) asset.get("exchange");
 
+            // Market
             Optional<Market> marketOpt = marketRepository.findByMarketCode(exchange);
             MarketDTO marketDTO = marketOpt.map(m -> new MarketDTO(m.getId(), m.getMarketCode())).orElse(null);
 
-            float price = 0;
-            float volume = 0;
-            try {
-                Map<String, Object> marketData = marketRestTemplate.getForObject(
-                        marketBaseUrl + "/v2/stocks/bars/latest?symbols=" + symbol, Map.class);
 
-                if (marketData != null && marketData.containsKey("bars")) {
-                    Map<String, Object> bars = (Map<String, Object>) marketData.get("bars");
-                    if (bars.containsKey(symbol)) {
-                        Map<String, Object> data = (Map<String, Object>) bars.get(symbol);
-                        price = data.get("c") != null ? Float.parseFloat(data.get("c").toString()) : 0;
-                        volume = data.get("v") != null ? Float.parseFloat(data.get("v").toString()) : 0;
-                    }
-                }
-            } catch (Exception ignored) {
+            // FMP data
+            float price = 0, volume = 0, marketCap = 0, change = 0;
+            String sector = "", industry = "";
+            Map<String, Object> profile = profileMap.get(symbol);
+            if (profile != null) {
+                price = profile.get("price") != null ? Float.parseFloat(profile.get("price").toString()) : 0;
+                volume = profile.get("volAvg") != null ? Float.parseFloat(profile.get("volAvg").toString()) : 0;
+                marketCap = profile.get("mktCap") != null ? Float.parseFloat(profile.get("mktCap").toString()) : 0;
+                change = profile.get("changes") != null ? Float.parseFloat(profile.get("changes").toString()) : 0;
+                sector = profile.get("sector") != null ? profile.get("sector").toString() : "";
+                industry = profile.get("industry") != null ? profile.get("industry").toString() : "";
             }
 
-            float marketCap = 0;
-            String sector = "";
-            try {
-                Map<String, Object>[] profile = fmpRestTemplate.getForObject(fmpApiUrl + symbol + "&apikey="+fmpApiKey, Map[].class);
-                if (profile != null && profile.length > 0) {
-                    marketCap = profile[0].get("marketCap") != null ? Float.parseFloat(profile[0].get("marketCap").toString()) : 0;
-                    sector = profile[0].get("sector") != null ? profile[0].get("sector").toString() : "";
-                }
-            } catch (Exception ignored) {
-            }
-
-            StockDTO dto = new StockDTO(symbol, name, sector, price, volume, marketCap, status, marketDTO);
+            StockDTO dto = new StockDTO(symbol, name, change, sector, industry, price, volume, marketCap, status, marketDTO);
             result.add(dto);
         }
 
         return result;
-
     }
+
 }
