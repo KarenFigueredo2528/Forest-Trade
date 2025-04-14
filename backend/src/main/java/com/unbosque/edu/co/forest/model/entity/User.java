@@ -45,7 +45,7 @@ public class User {
 
 
     // Role-specific attributes
-    @Column(name = "commission_rate", precision = 5, scale = 2)
+    @Column(name = "commission_rate")
     private Double commissionRate;
 
     @Column(name = "has_subscription")

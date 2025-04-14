@@ -1,6 +1,5 @@
 package com.unbosque.edu.co.forest.model.dto;
 
-import com.unbosque.edu.co.forest.model.entity.Market;
 
 public class StockDTO {
 
@@ -11,11 +10,11 @@ public class StockDTO {
     private float volume;
     private float marketCapitalization;
     private String status;
-    private Market market;
+    private MarketDTO market;
 
     public StockDTO() {}
 
-    public StockDTO(String symbol, String stockName, String sector, float currentPrice, float volume, float marketCapitalization, String status, Market market) {
+    public StockDTO(String symbol, String stockName, String sector, float currentPrice, float volume, float marketCapitalization, String status, MarketDTO market) {
         this.symbol = symbol;
         this.stockName = stockName;
         this.sector = sector;
@@ -82,11 +81,11 @@ public class StockDTO {
         this.status = status;
     }
 
-    public Market getMarket() {
+    public MarketDTO getMarket() {
         return market;
     }
 
-    public void setMarket(Market market) {
+    public void setMarket(MarketDTO market) {
         this.market = market;
     }
 }
