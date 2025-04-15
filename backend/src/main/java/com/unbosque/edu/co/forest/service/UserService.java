@@ -51,9 +51,6 @@ public class UserService {
             throw new RuntimeException("Email already in use");
         }
 
-        if (userDTO.getRole() == null) {
-            userDTO.setRole(Role.ADMIN);
-        }
         if (userDTO.getAccountStatus() == null) {
             userDTO.setAccountStatus(AccountStatus.ACTIVE);
         }
