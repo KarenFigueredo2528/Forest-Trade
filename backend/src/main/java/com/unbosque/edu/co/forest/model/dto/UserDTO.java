@@ -11,8 +11,10 @@ public class UserDTO {
     private Integer id;
     private String name;
     private String email;
-    private Role role;
     private String phone;
+    private String password;
+    private String passwordHash;
+    private Role role;
     private AccountStatus accountStatus;
     private LocalDateTime createdAt;
     private LocalDateTime lastAccess;
@@ -23,18 +25,20 @@ public class UserDTO {
     private Integer dailyOrderLimit;
     private OrderType defaultOrderType;
 
+    // Constructor vacío
     public UserDTO() {
     }
 
-    public UserDTO(Integer id, String name, String email, Role role, String phone,
+    // Constructor con todos los campos
+    public UserDTO(Integer id, String name, String email, String phone, Role role,
                    AccountStatus accountStatus, LocalDateTime createdAt, LocalDateTime lastAccess,
                    Double commissionRate, Boolean hasSubscription, String alpacaStatus,
-                   String alpacaAccountId, Integer dailyOrderLimit, OrderType defaultOrderType) {
+                   String alpacaAccountId, Integer dailyOrderLimit, OrderType defaultOrderType,String passwordHash) {
         this.id = id;
         this.name = name;
         this.email = email;
-        this.role = role;
         this.phone = phone;
+        this.role = role;
         this.accountStatus = accountStatus;
         this.createdAt = createdAt;
         this.lastAccess = lastAccess;
@@ -44,10 +48,10 @@ public class UserDTO {
         this.alpacaAccountId = alpacaAccountId;
         this.dailyOrderLimit = dailyOrderLimit;
         this.defaultOrderType = defaultOrderType;
+        this.passwordHash = passwordHash;
     }
 
-    // Getters and setters...
-
+    // Getters y Setters
     public Integer getId() {
         return id;
     }
@@ -72,20 +76,20 @@ public class UserDTO {
         this.email = email;
     }
 
-    public Role getRole() {
-        return role;
-    }
-
-    public void setRole(Role role) {
-        this.role = role;
-    }
-
     public String getPhone() {
         return phone;
     }
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
     }
 
     public AccountStatus getAccountStatus() {
@@ -158,5 +162,13 @@ public class UserDTO {
 
     public void setDefaultOrderType(OrderType defaultOrderType) {
         this.defaultOrderType = defaultOrderType;
+    }
+
+    public String getPasswordHash() {
+        return passwordHash;
+    }
+
+    public void setPasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
     }
 }
