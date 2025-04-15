@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import StockCard from '../components/StockCard';
-import { fetchStocks } from '../services/stockService';
-import './StocksPage.css';
+import DashboardLayout from '../../layouts/DashboardLayout';
+import StockCard from '../../components/StockCard/StockCard';
+import { fetchStocks } from '../../services/stockService';
+import './StocksPage.module.css';
 
 const StocksPage = () => {
     const [stocks, setStocks] = useState([]);
@@ -16,6 +17,7 @@ const StocksPage = () => {
     }, []);
 
     return (
+        <DashboardLayout>
         <div>
             <h2 style={{ textAlign: 'center' }}>Stock List</h2>
             {isLoading ? (
@@ -32,6 +34,7 @@ const StocksPage = () => {
             </div>
             )}
         </div>
+        </DashboardLayout>
     );
 };
 
