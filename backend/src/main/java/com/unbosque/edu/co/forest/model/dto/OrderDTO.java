@@ -10,7 +10,7 @@ public class OrderDTO {
 
     private Integer orderId;
     private String alpacaOrderId;
-    private Long userId;
+    private Integer userId;
     private OrderType orderType;
     private String symbol;
     private Integer quantity;
@@ -30,7 +30,7 @@ public class OrderDTO {
 
     public OrderDTO() {}
 
-    public OrderDTO(Integer orderId, String alpacaOrderId, Long userId, OrderType orderType, String symbol,
+    public OrderDTO(Integer orderId, String alpacaOrderId, Integer userId, OrderType orderType, String symbol,
                     Integer quantity, TimeInForceOrder timeInForce, float limitPrice, float stopPrice,
                     float filledPrice, float totalAmountPaid, float pricePerStock,
                     float platformCommission, float brokerCommission,
@@ -75,11 +75,11 @@ public class OrderDTO {
         this.alpacaOrderId = alpacaOrderId;
     }
 
-    public Long getUserId() {
+    public Integer getUserId() {
         return userId;
     }
 
-    public void setUserId(Long userId) {
+    public void setUserId(Integer userId) {
         this.userId = userId;
     }
 

@@ -20,7 +20,7 @@ public class Order {
     private String alpacaOrderId;
 
     @Column(name = "user_id", nullable = false)
-    private Long userId;
+    private Integer userId;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "order_type", nullable = false)
@@ -70,7 +70,7 @@ public class Order {
     @Column(name = "signed_by")
     private Integer signedBy;
 
-    public Order(Integer orderId, String alpacaOrderId, Long userId, OrderType orderType, String symbol, Integer quantity, TimeInForceOrder timeInForce, float limitPrice, float stopPrice, float filled_price, float totalAmountPaid, float platformCommission, float brokerCommission, OrderStatus orderStatus, Boolean requiresSignature, LocalDateTime createdAt, LocalDateTime sentToAlpacaAt, Integer signedBy) {
+    public Order(Integer orderId, String alpacaOrderId, Integer userId, OrderType orderType, String symbol, Integer quantity, TimeInForceOrder timeInForce, float limitPrice, float stopPrice, float filled_price, float totalAmountPaid, float platformCommission, float brokerCommission, OrderStatus orderStatus, Boolean requiresSignature, LocalDateTime createdAt, LocalDateTime sentToAlpacaAt, Integer signedBy) {
         this.orderId = orderId;
         this.alpacaOrderId = alpacaOrderId;
         this.userId = userId;
@@ -103,11 +103,11 @@ public class Order {
         this.alpacaOrderId = alpacaOrderId;
     }
 
-    public Long getUserId() {
+    public Integer getUserId() {
         return userId;
     }
 
-    public void setUserId(Long userId) {
+    public void setUserId(Integer userId) {
         this.userId = userId;
     }
 
