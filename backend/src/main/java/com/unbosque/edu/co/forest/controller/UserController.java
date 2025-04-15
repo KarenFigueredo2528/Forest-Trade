@@ -4,6 +4,8 @@ import com.unbosque.edu.co.forest.model.dto.UserDTO;
 import com.unbosque.edu.co.forest.model.enums.AccountStatus;
 import com.unbosque.edu.co.forest.model.enums.Role;
 import com.unbosque.edu.co.forest.service.UserService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,6 +32,18 @@ public class UserController {
     public UserDTO registerUser(@RequestBody UserDTO user) {
         return service.createUser(user);
     }
+
+    // Log in user
+    @PostMapping("/login")
+    public ResponseEntity<?> loginUser(@RequestBody UserDTO request) {
+        try {
+            UserDTO user = service.loginUser(request.getEmail(), request.getPasswordHash());
+            return ResponseEntity.ok(user);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+        }
+    }
+
 
     // Find by email
     @GetMapping("/find")

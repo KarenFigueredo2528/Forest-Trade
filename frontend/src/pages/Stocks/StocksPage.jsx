@@ -16,6 +16,8 @@ const StocksPage = () => {
             .finally(() => setIsLoading(false));
     }, []);
 
+    console.log(stocks);
+    
     return (
         <DashboardLayout>
         <div>

@@ -6,7 +6,7 @@ import styles from './LoginPage.module.css';
 const LoginPage = () => {
   const [formData, setFormData] = useState({
     email: '',
-    password: '',
+    passwordHash: '',
   });
   const [error, setError] = useState(null);
   const navigate = useNavigate();
@@ -22,8 +22,8 @@ const LoginPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await loginUser({email: formData.email, password:formData.password}); // Aquí deberías obtener y guardar el token si tu backend lo devuelve
-      navigate('/dashboard'); // Redirige a tu página principal o dashboard
+      await loginUser({email: formData.email, passwordHash:formData.passwordHash}); // Aquí deberías obtener y guardar el token si tu backend lo devuelve
+      navigate('/'); // Redirige a tu página principal o dashboard
     } catch (err) {
       setError('Inicio de sesión fallido. Verifique sus datos.');
     }
@@ -50,8 +50,8 @@ const LoginPage = () => {
           <input
             type="password"
             id="password"
-            name="password"
-            value={formData.password}
+            name="passwordHash"
+            value={formData.passwordHash}
             onChange={handleChange}
             required
           />

@@ -66,8 +66,8 @@ const RegisterPage = () => {
           <input
             type="password"
             id="password"
-            name="password"
-            value={formData.password}
+            name="passwordHash"
+            value={formData.passwordHash}
             onChange={handleChange}
             required
           />
