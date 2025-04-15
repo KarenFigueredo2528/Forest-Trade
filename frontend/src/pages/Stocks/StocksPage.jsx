@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import DashboardLayout from '../../layouts/DashboardLayout';
 import StockCard from '../../components/StockCard/StockCard';
 import { fetchStocks } from '../../services/stockService';
-import './StocksPage.module.css';
+
 
 const StocksPage = () => {
     const [stocks, setStocks] = useState([]);
