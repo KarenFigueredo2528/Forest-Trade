@@ -33,7 +33,7 @@ public class UserDTO {
     public UserDTO(Integer id, String name, String email, String phone, Role role,
                    AccountStatus accountStatus, LocalDateTime createdAt, LocalDateTime lastAccess,
                    Double commissionRate, Boolean hasSubscription, String alpacaStatus,
-                   String alpacaAccountId, Integer dailyOrderLimit, OrderType defaultOrderType,String passwordHash) {
+                   String alpacaAccountId, Integer dailyOrderLimit, OrderType defaultOrderType,String password,String passwordHash) {
         this.id = id;
         this.name = name;
         this.email = email;
@@ -48,6 +48,7 @@ public class UserDTO {
         this.alpacaAccountId = alpacaAccountId;
         this.dailyOrderLimit = dailyOrderLimit;
         this.defaultOrderType = defaultOrderType;
+        this.password = password;
         this.passwordHash = passwordHash;
     }
 
@@ -162,6 +163,14 @@ public class UserDTO {
 
     public void setDefaultOrderType(OrderType defaultOrderType) {
         this.defaultOrderType = defaultOrderType;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public String getPasswordHash() {

@@ -4,12 +4,15 @@ import { useNavigate } from 'react-router-dom';
 import { registerUser } from '../../services/userService';
 import styles from './RegisterPage.module.css';
 
+const roles = ['INVESTOR', 'STOCKBROKER', 'ADMIN'];
+
 const RegisterPage = () => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    passwordHash: '',
+    password: '',
     phone: '',
+    role: 'INVESTOR', // default value
   });
   const [error, setError] = useState(null);
   const navigate = useNavigate();
@@ -26,7 +29,7 @@ const RegisterPage = () => {
     e.preventDefault();
     try {
       await registerUser(formData);
-      navigate('/login'); // Redirigir a login después del registro exitoso
+      navigate('/login'); // navigate to login after register
     } catch (err) {
       setError('Registro fallido. Intente nuevamente.');
     }
@@ -80,6 +83,22 @@ const RegisterPage = () => {
             onChange={handleChange}
             required
           />
+        </div>
+        <div className={styles.formGroup}>
+          <label htmlFor="role">Rol</label>
+          <select
+            id="role"
+            name="role"
+            value={formData.role}
+            onChange={handleChange}
+            required
+          >
+            {roles.map((role) => (
+              <option key={role} value={role}>
+                {role}
+              </option>
+            ))}
+          </select>
         </div>
         <button type="submit" className={styles.submitButton}>
           Registrar
