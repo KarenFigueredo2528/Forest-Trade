@@ -1,5 +1,5 @@
 import React from 'react';
-import './StockCard.css'; // Si tienes estilos
+import './StockCard.module.css'; // Si tienes estilos
 
 const StockCard = ({ stock }) => {
     const isPositive = stock.change > 0;
