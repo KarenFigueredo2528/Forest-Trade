@@ -57,14 +57,12 @@ public class UserService {
         if (userDTO.getAccountStatus() == null) {
             userDTO.setAccountStatus(AccountStatus.ACTIVE);
         }
-        if (userDTO.getPasswordHash() == null) {
+        if (userDTO.getPassword() == null) {
             throw new IllegalArgumentException("Password cannot be null");
         }
-        userDTO.setPasswordHash(passwordEncoder.encode(userDTO.getPasswordHash()));
-        System.out.println(userDTO);
+        userDTO.setPasswordHash(passwordEncoder.encode(userDTO.getPassword()));
 
         User user = modelMapper.map(userDTO, User.class);
-        System.out.println(user);
         User savedUser = userRepository.save(user);
         return modelMapper.map(savedUser, UserDTO.class);
     }

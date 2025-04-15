@@ -8,7 +8,7 @@ const RegisterPage = () => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    passwordHash: '',
+    password: '',
     phone: '',
   });
   const [error, setError] = useState(null);
