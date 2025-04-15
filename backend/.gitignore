@@ -32,5 +32,6 @@ build/
 ### VS Code ###
 .vscode/
 
-### Sensible ###
+### Sensible
 .resources/application.properties
+src/main/resources/application.properties
