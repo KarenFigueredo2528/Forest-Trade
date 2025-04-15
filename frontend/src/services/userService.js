@@ -13,6 +13,17 @@ export const registerUser = async (userData) => {
   }
 };
 
+// Iniciar sesión de usuario
+export const loginUser = async (credentials) => {
+  try {
+    const response = await axios.post(`${API_URL}/login`, credentials); // POST /api/users/login
+    return response.data; // Aquí podría venir el token o la info del usuario
+  } catch (error) {
+    throw new Error(error.response?.data?.message || 'Error en el inicio de sesión');
+  }
+};
+
+
 // Obtener todos los usuarios
 export const getAllUsers = async () => {
   try {

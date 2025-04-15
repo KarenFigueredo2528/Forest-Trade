@@ -28,6 +28,8 @@ const RegisterPage = () => {
       await registerUser(formData);
       navigate('/login'); // Redirigir a login después del registro exitoso
     } catch (err) {
+      console.log(err);
+      
       setError('Registro fallido. Intente nuevamente.');
     }
   };
