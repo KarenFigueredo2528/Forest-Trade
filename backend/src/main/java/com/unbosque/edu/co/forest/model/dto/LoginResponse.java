@@ -8,9 +8,14 @@ public class LoginResponse {
     private boolean mfaRequired;
     private List<String> roles;
     private UserDTO user;
+    private String errorMessage;
 
-    public LoginResponse(String token) {
+    public LoginResponse(String token, boolean mfaRequired) {
         this.token = token;
+    }
+
+    public LoginResponse(String errorMessage) {
+        this.errorMessage = errorMessage;
     }
 
     public String getToken() {
@@ -51,5 +56,9 @@ public class LoginResponse {
 
     public void setUser(UserDTO user) {
         this.user = user;
+    }
+
+    public String getErrorMessage() {
+        return errorMessage;
     }
 }

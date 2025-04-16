@@ -50,12 +50,13 @@ public class UserController {
 
             System.out.println("Usuario que intentó loggear: " + user.toString() + " Request: " + request.getEmail() + request.getPassword() );
 
-            LoginResponse response = new LoginResponse(jwtUtil.generateToken(user));
+            LoginResponse response = new LoginResponse(jwtUtil.generateToken(user), false);
 
             return ResponseEntity.ok(response);
 
         } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+            LoginResponse errorResponse = new LoginResponse(e.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
         }
     }
 
