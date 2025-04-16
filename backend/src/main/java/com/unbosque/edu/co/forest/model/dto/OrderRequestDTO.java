@@ -5,20 +5,20 @@ import com.unbosque.edu.co.forest.model.enums.TimeInForceOrder;
 
 public class OrderRequestDTO {
 
-    private UserDTO user;
+    private UserSessionDTO user;
     private OrderType orderType;
     private Integer quantity;
     private TimeInForceOrder timeInForce;
-    private float limitPrice;
-    private float stopPrice;
+    private Float limitPrice;
+    private Float stopPrice;
     private boolean requiresSignature;
     private StockDTO stock;
 
-    public UserDTO getUser() {
+    public UserSessionDTO getUser() {
         return user;
     }
 
-    public void setUser(UserDTO user) {
+    public void setUser(UserSessionDTO user) {
         this.user = user;
     }
 

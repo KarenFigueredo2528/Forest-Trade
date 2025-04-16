@@ -37,16 +37,16 @@ public class Order {
     private TimeInForceOrder timeInForce;
 
     @Column(name = "limit_price")
-    private float limitPrice;
+    private Float limitPrice;
 
     @Column(name = "stop_price")
-    private float stopPrice;
+    private Float stopPrice;
 
     @Column(name = "filled_price")
     private float filled_price; //Total por acciones
 
     @Column(name = "total_amount_paid")
-    private float totalAmountPaid ; // Precio total pagado
+    private float totalAmountPaid; // Precio total pagado
 
     @Column(name = "platform_commission")
     private float platformCommission; // comision de la plataforma
@@ -55,7 +55,7 @@ public class Order {
     private float brokerCommission; //comision del broker
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status",nullable = false)
+    @Column(name = "status", nullable = false)
     private OrderStatus orderStatus;
 
     @Column(name = "requires_signature")
@@ -70,7 +70,14 @@ public class Order {
     @Column(name = "signed_by")
     private Integer signedBy;
 
-    public Order(Integer orderId, String alpacaOrderId, Integer userId, OrderType orderType, String symbol, Integer quantity, TimeInForceOrder timeInForce, float limitPrice, float stopPrice, float filled_price, float totalAmountPaid, float platformCommission, float brokerCommission, OrderStatus orderStatus, Boolean requiresSignature, LocalDateTime createdAt, LocalDateTime sentToAlpacaAt, Integer signedBy) {
+    @Column(name = "sent_to_alpaca")
+    private boolean sentToAlpaca;
+
+    @Column(name = "alpaca_sended_status")
+    private String alpacaStatus;
+
+
+    public Order(Integer orderId, String alpacaOrderId, Integer userId, OrderType orderType, String symbol, Integer quantity, TimeInForceOrder timeInForce, Float limitPrice, Float stopPrice, float filled_price, float totalAmountPaid, float platformCommission, float brokerCommission, OrderStatus orderStatus, Boolean requiresSignature, LocalDateTime createdAt, LocalDateTime sentToAlpacaAt, Integer signedBy, boolean sentToAlpaca, String alpacaStatus) {
         this.orderId = orderId;
         this.alpacaOrderId = alpacaOrderId;
         this.userId = userId;
@@ -89,11 +96,20 @@ public class Order {
         this.createdAt = createdAt;
         this.sentToAlpacaAt = sentToAlpacaAt;
         this.signedBy = signedBy;
+        this.sentToAlpaca = sentToAlpaca;
+        this.alpacaStatus = alpacaStatus;
     }
 
     public Order() {
     }
 
+    public boolean isSentToAlpaca() {
+        return sentToAlpaca;
+    }
+
+    public void setSentToAlpaca(boolean sentToAlpaca) {
+        this.sentToAlpaca = sentToAlpaca;
+    }
 
     public String getAlpacaOrderId() {
         return alpacaOrderId;
@@ -143,19 +159,19 @@ public class Order {
         this.timeInForce = timeInForce;
     }
 
-    public float getLimitPrice() {
+    public Float getLimitPrice() {
         return limitPrice;
     }
 
-    public void setLimitPrice(float limitPrice) {
+    public void setLimitPrice(Float limitPrice) {
         this.limitPrice = limitPrice;
     }
 
-    public float getStopPrice() {
+    public Float getStopPrice() {
         return stopPrice;
     }
 
-    public void setStopPrice(float stopPrice) {
+    public void setStopPrice(Float stopPrice) {
         this.stopPrice = stopPrice;
     }
 
@@ -237,5 +253,13 @@ public class Order {
 
     public void setSignedBy(Integer signedBy) {
         this.signedBy = signedBy;
+    }
+
+    public String getAlpacaStatus() {
+        return alpacaStatus;
+    }
+
+    public void setAlpacaStatus(String alpacaStatus) {
+        this.alpacaStatus = alpacaStatus;
     }
 }

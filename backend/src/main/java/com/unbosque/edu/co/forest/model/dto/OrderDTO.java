@@ -15,8 +15,8 @@ public class OrderDTO {
     private String symbol;
     private Integer quantity;
     private TimeInForceOrder timeInForce;
-    private float limitPrice;
-    private float stopPrice;
+    private Float limitPrice;
+    private Float stopPrice;
     private float filledPrice;
     private float totalAmountPaid;
     private float pricePerStock;
@@ -27,15 +27,12 @@ public class OrderDTO {
     private LocalDateTime createdAt;
     private LocalDateTime sentToAlpacaAt;
     private Integer signedBy;
+    private String alpacaStatus;
+    private boolean sentToAlpaca;
 
     public OrderDTO() {}
 
-    public OrderDTO(Integer orderId, String alpacaOrderId, Integer userId, OrderType orderType, String symbol,
-                    Integer quantity, TimeInForceOrder timeInForce, float limitPrice, float stopPrice,
-                    float filledPrice, float totalAmountPaid, float pricePerStock,
-                    float platformCommission, float brokerCommission,
-                    OrderStatus orderStatus, Boolean requiresSignature,
-                    LocalDateTime createdAt, LocalDateTime sentToAlpacaAt, Integer signedBy) {
+    public OrderDTO(Integer orderId, String alpacaOrderId, Integer userId, OrderType orderType, String symbol, Integer quantity, TimeInForceOrder timeInForce, Float limitPrice, Float stopPrice, float filledPrice, float totalAmountPaid, float pricePerStock, float platformCommission, float brokerCommission, OrderStatus orderStatus, Boolean requiresSignature, LocalDateTime createdAt, LocalDateTime sentToAlpacaAt, Integer signedBy, String alpacaStatus, boolean sentToAlpaca) {
         this.orderId = orderId;
         this.alpacaOrderId = alpacaOrderId;
         this.userId = userId;
@@ -55,6 +52,24 @@ public class OrderDTO {
         this.createdAt = createdAt;
         this.sentToAlpacaAt = sentToAlpacaAt;
         this.signedBy = signedBy;
+        this.alpacaStatus = alpacaStatus;
+        this.sentToAlpaca = sentToAlpaca;
+    }
+
+    public boolean isSentToAlpaca() {
+        return sentToAlpaca;
+    }
+
+    public void setSentToAlpaca(boolean sentToAlpaca) {
+        this.sentToAlpaca = sentToAlpaca;
+    }
+
+    public String getAlpacaStatus() {
+        return alpacaStatus;
+    }
+
+    public void setAlpacaStatus(String alpacaStatus) {
+        this.alpacaStatus = alpacaStatus;
     }
 
     // Getters y Setters
@@ -115,19 +130,19 @@ public class OrderDTO {
         this.timeInForce = timeInForce;
     }
 
-    public float getLimitPrice() {
+    public Float getLimitPrice() {
         return limitPrice;
     }
 
-    public void setLimitPrice(float limitPrice) {
+    public void setLimitPrice(Float limitPrice) {
         this.limitPrice = limitPrice;
     }
 
-    public float getStopPrice() {
+    public Float getStopPrice() {
         return stopPrice;
     }
 
-    public void setStopPrice(float stopPrice) {
+    public void setStopPrice(Float stopPrice) {
         this.stopPrice = stopPrice;
     }
 
