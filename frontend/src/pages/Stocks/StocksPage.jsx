@@ -1,8 +1,10 @@
+// src/pages/Stocks/StocksPage.jsx
+
 import React, { useEffect, useState } from 'react';
 import DashboardLayout from '../../layouts/DashboardLayout';
 import StockCard from '../../components/StockCard/StockCard';
 import { fetchStocks } from '../../services/stockService';
-import './StocksPage.module.css';
+import styles from './StocksPage.module.css'; // Importamos los estilos
 
 const StocksPage = () => {
     const [stocks, setStocks] = useState([]);
@@ -18,22 +20,19 @@ const StocksPage = () => {
 
     return (
         <DashboardLayout>
-        <div>
-            <h2 style={{ textAlign: 'center' }}>Stock List</h2>
-            {isLoading ? (
-                    <div style={{ textAlign: 'center', marginTop: '20px' }}>
+            <div>
+                {isLoading ? (
+                    <div className={styles.loader}>
                         <span>Cargando acciones...</span>
-                        {/* Puedes usar un spinner si ya tienes uno */}
-                        <div className="loader" />
                     </div>
                 ) : (
-            <div className="stock-grid">
-                {stocks.map(stock => (
-                    <StockCard key={stock.symbol} stock={stock} />
-                ))}
+                    <div className={styles['stock-grid']}>
+                        {stocks.map(stock => (
+                            <StockCard key={stock.symbol} stock={stock} />
+                        ))}
+                    </div>
+                )}
             </div>
-            )}
-        </div>
         </DashboardLayout>
     );
 };

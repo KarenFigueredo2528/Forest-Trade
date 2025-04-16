@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { registerUser } from '../../services/userService';
 import styles from './RegisterPage.module.css';
+import { Button } from '../../components/Button/Button';
 
 const roles = ['INVESTOR', 'STOCKBROKER', 'ADMIN'];
 
