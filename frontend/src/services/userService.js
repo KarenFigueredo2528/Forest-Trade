@@ -1,7 +1,8 @@
 // src/services/userService.js
-import axios from 'axios';
+import axios from "axios";
+import { saveAuthData } from "./authService";
 
-const API_URL = 'http://localhost:8080/api/users'; // Ajustar si cambia el puerto
+const API_URL = "http://localhost:8080/api/users"; // Ajustar si cambia el puerto
 
 // Registrar nuevo usuario
 export const registerUser = async (userData) => {
@@ -9,8 +10,33 @@ export const registerUser = async (userData) => {
     const response = await axios.post(API_URL, userData); // POST /api/users
     return response.data;
   } catch (error) {
-    throw new Error(error.response?.data?.message || 'Error en el registro');
+    throw new Error(error.response?.data?.message || "Error en el registro");
   }
+};
+
+// Log in User
+export const loginUser = async (credentials) => {
+  try {
+    const response = await axios.post(`${API_URL}/login`, credentials);
+    
+    const { token, user, roles } = response.data;
+
+    if (token) {
+      saveAuthData(token, user, roles);
+    }
+
+    return response.data;
+
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message || "Error en el inicio de sesión"
+    );
+  }
+};
+
+export const getCurrentUser = () => {
+  const user = localStorage.getItem("user");
+  return user ? JSON.parse(user) : null;
 };
 
 // Obtener todos los usuarios
@@ -19,7 +45,7 @@ export const getAllUsers = async () => {
     const response = await axios.get(API_URL); // GET /api/users
     return response.data;
   } catch (error) {
-    throw new Error('Error al obtener usuarios');
+    throw new Error("Error al obtener usuarios");
   }
 };
 
@@ -31,7 +57,7 @@ export const getUserByEmail = async (email) => {
     });
     return response.data;
   } catch (error) {
-    throw new Error('Usuario no encontrado');
+    throw new Error("Usuario no encontrado");
   }
 };
 
@@ -41,6 +67,6 @@ export const testConnection = async () => {
     const response = await axios.get(`${API_URL}/test`);
     return response.data;
   } catch (error) {
-    throw new Error('No se pudo conectar con el backend');
+    throw new Error("No se pudo conectar con el backend");
   }
 };

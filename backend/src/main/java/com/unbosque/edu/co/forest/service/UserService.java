@@ -64,6 +64,19 @@ public class UserService {
         return modelMapper.map(savedUser, UserDTO.class);
     }
 
+    public UserDTO loginUser(String email, String rawPassword) {
+        User user = userRepository.findUserByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Correo no registrado"));
+
+        if (!passwordEncoder.matches(rawPassword, user.getPasswordHash())) {
+            throw new RuntimeException("Contraseña incorrecta");
+        }
+
+        UserDTO dto = modelMapper.map(user, UserDTO.class);
+        dto.setPasswordHash(null); 
+        return dto;
+    }
+
     public boolean emailExists(String email) {
         return userRepository.findUserByEmail(email).isPresent();
     }

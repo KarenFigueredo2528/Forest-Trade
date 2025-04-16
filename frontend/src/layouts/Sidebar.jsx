@@ -12,6 +12,7 @@ const Sidebar = () => {
           <li>Alertas</li>
           <li>Configuración</li>
           <li><Link to="/register">Registrar Usuario</Link></li> {/* Nuevo ítem */}
+          <li><Link to="/login">Iniciar Sesión</Link></li>
         </ul>
       </nav>
     </aside>
