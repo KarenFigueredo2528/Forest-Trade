@@ -1,0 +1,22 @@
+/* src/layouts/DashboardLayout.module.css */
+
+.layout {
+  display: flex;
+  background-color: #060610;
+  height: 100vh;
+}
+
+.mainContent {
+  flex: 1;
+  margin-left: 250px;
+  padding: 20px;
+  transition: margin-left 0.3s ease;
+}
+
+.mainContentCollapsed {
+  margin-left: 0;
+}
+
+.content {
+  margin-top: 20px;
+}

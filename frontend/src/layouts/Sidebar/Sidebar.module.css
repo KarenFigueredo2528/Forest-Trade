@@ -1,0 +1,82 @@
+/* src/layouts/Sidebar.module.css */
+
+.sidebar {
+  width: 250px;
+  height: 100vh;
+  background-color: #060610;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding-top: 20px;
+  color: white;
+  font-family: 'Arial', sans-serif;
+  position: fixed;
+  transition: transform 0.3s ease;
+  padding: 20px;
+  border-right: 1px solid rgb(71, 71, 71)
+}
+
+.navList {
+  list-style: none;
+  padding: 0;
+  width: 100%;
+}
+
+.navItem {
+  width: 100%;
+  margin: 15px 0;
+}
+
+.navLink {
+  display: block;
+  text-decoration: none;
+  color: white;
+  font-size: 18px;
+  text-align: center;
+  padding: 10px;
+  transition: background-color 0.3s ease;
+}
+
+.navLink:hover {
+  background-color: #495057;
+  border-radius: 4px;
+}
+
+/* Estilo para el sidebar oculto */
+.hidden {
+  transform: translateX(-100%); /* Mueve el sidebar fuera de la pantalla */
+}
+
+/* Estilo para el sidebar visible */
+.visible {
+  transform: translateX(0); /* Sidebar visible */
+}
+
+.sidebar h2 {
+  font-size: 1.2rem;
+  margin-bottom: 20px;
+}
+
+.sidebar nav ul {
+  list-style: none;
+  padding: 0;
+}
+
+.sidebar nav li {
+  margin-bottom: 16px;
+}
+
+.sidebar nav a {
+  display: flex;
+  align-items: center;
+  padding: 10px 14px;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: background 0.2s ease;
+}
+
+.sidebar nav a:hover,
+.sidebar nav a.active {
+  background-color: var(--primary-dark);
+}
