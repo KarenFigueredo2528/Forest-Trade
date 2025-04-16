@@ -1,0 +1,14 @@
+.button {
+  background: linear-gradient(90deg, var(--primary), var(--primary-dark));
+  border: none;
+  border-radius: 12px;
+  padding: 10px 20px;
+  color: var(--text-light);
+  font-weight: bold;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.button:hover {
+  filter: brightness(1.1);
+}
