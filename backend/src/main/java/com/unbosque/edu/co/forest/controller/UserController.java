@@ -1,9 +1,14 @@
 package com.unbosque.edu.co.forest.controller;
 
+import com.unbosque.edu.co.forest.model.dto.LoginResponse;
 import com.unbosque.edu.co.forest.model.dto.UserDTO;
 import com.unbosque.edu.co.forest.model.enums.AccountStatus;
 import com.unbosque.edu.co.forest.model.enums.Role;
+import com.unbosque.edu.co.forest.security.JwtUtil;
 import com.unbosque.edu.co.forest.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -11,9 +16,13 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/users")
 @CrossOrigin(origins = "*") // Allow React frontend
+
 public class UserController {
 
     private final UserService service;
+
+    @Autowired
+    private JwtUtil jwtUtil;
 
     public UserController(UserService service) {
         this.service = service;
@@ -30,6 +39,27 @@ public class UserController {
     public UserDTO registerUser(@RequestBody UserDTO user) {
         return service.createUser(user);
     }
+
+    // Login user
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponse> loginUser(@RequestBody UserDTO request) {
+
+        System.out.println(" Request: " + request.toString() );
+        try {
+            UserDTO user = service.loginUser(request.getEmail(), request.getPassword());
+
+            System.out.println("Usuario que intentó loggear: " + user.toString() + " Request: " + request.getEmail() + request.getPassword() );
+
+            LoginResponse response = new LoginResponse(jwtUtil.generateToken(user), false);
+
+            return ResponseEntity.ok(response);
+
+        } catch (RuntimeException e) {
+            LoginResponse errorResponse = new LoginResponse(e.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
+        }
+    }
+
 
     // Find by email
     @GetMapping("/find")
