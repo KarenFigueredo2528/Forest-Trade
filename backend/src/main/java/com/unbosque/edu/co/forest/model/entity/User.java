@@ -7,6 +7,7 @@ import com.unbosque.edu.co.forest.model.enums.Role;
 import com.unbosque.edu.co.forest.model.enums.OrderType;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -64,6 +65,11 @@ public class User {
     @Column(name = "default_order_type")
     private OrderType defaultOrderType;
 
+    @Column(name = "balance", nullable = false)
+    private Float balance;
+
+
+
     // Constructors
     public User() {
     }
@@ -84,7 +90,17 @@ public class User {
         this.alpacaAccountId = alpacaAccountId;
         this.dailyOrderLimit = dailyOrderLimit;
         this.defaultOrderType = defaultOrderType;
+        balance = 0f;
     }
+
+    public Float getBalance() {
+        return balance;
+    }
+
+    public void setBalance(Float balance) {
+        this.balance = balance;
+    }
+
 
     public String getName() {
         return name;

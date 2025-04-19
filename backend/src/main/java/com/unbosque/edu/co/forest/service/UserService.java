@@ -1,5 +1,6 @@
 package com.unbosque.edu.co.forest.service;
 
+import com.unbosque.edu.co.forest.exception.InsufficientBalanceException;
 import com.unbosque.edu.co.forest.model.dto.UserDTO;
 import com.unbosque.edu.co.forest.model.entity.User;
 import com.unbosque.edu.co.forest.repository.UserRepository;
@@ -47,4 +48,38 @@ public class UserService {
         User savedUser = userRepository.save(user);
         return modelMapper.map(savedUser, UserDTO.class);
     }
+
+    public void subtractFromBalance(Integer userId, float amount) {
+        var user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found with id " + userId));
+
+        float currentBalance = user.getBalance();
+
+        validateBalance(userId, amount);
+
+        user.setBalance(currentBalance - amount);
+        userRepository.save(user);
+    }
+
+    public void validateBalance(Integer userId, float amount) {
+        var user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found with id " + userId));
+
+        float currentBalance = user.getBalance();
+
+        if (user.getBalance() < amount) {
+            throw new InsufficientBalanceException("No tienes saldo suficiente para completar esta orden, saldo requerido: "+amount+", saldo actual: "+currentBalance+".");
+        }
+
+
+    }
+
+    public void addToBalance(Integer userId, float amount) {
+        var user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found with id " + userId));
+        user.setBalance(user.getBalance() + amount);
+        userRepository.save(user);
+    }
+
+
 }

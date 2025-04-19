@@ -51,7 +51,7 @@ public class StockService {
                 .filter(asset -> "active".equals(asset.get("status"))
                         && Boolean.TRUE.equals(asset.get("tradable"))
                         && Arrays.asList("NASDAQ", "NYSE", "AMEX").contains(asset.get("exchange")))
-                .limit(10)
+                .limit(20)
                 .toList();
 
         List<String> symbols = filteredAssets.stream()

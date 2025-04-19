@@ -2,6 +2,7 @@ package com.unbosque.edu.co.forest.model.entity;
 
 import com.unbosque.edu.co.forest.model.enums.OrderStatus;
 import com.unbosque.edu.co.forest.model.enums.OrderType;
+import com.unbosque.edu.co.forest.model.enums.Role;
 import com.unbosque.edu.co.forest.model.enums.TimeInForceOrder;
 import jakarta.persistence.*;
 
@@ -16,15 +17,8 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer orderId;
 
-    @Column(name = "alpaca_id", unique = true)
-    private String alpacaOrderId;
-
     @Column(name = "user_id", nullable = false)
     private Integer userId;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "order_type", nullable = false)
-    private OrderType orderType;
 
     @Column(nullable = false)
     private String symbol;
@@ -33,33 +27,24 @@ public class Order {
     private Integer quantity;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "time_in_force", nullable = false)
-    private TimeInForceOrder timeInForce;
+    @Column(name = "order_type", nullable = false)
+    private OrderType orderType;
 
-    @Column(name = "limit_price")
-    private Float limitPrice;
-
-    @Column(name = "stop_price")
-    private Float stopPrice;
-
-    @Column(name = "filled_price")
-    private float filled_price; //Total por acciones
-
-    @Column(name = "total_amount_paid")
-    private float totalAmountPaid; // Precio total pagado
-
-    @Column(name = "platform_commission")
-    private float platformCommission; // comision de la plataforma
-
-    @Column(name = "broker_commission")
-    private float brokerCommission; //comision del broker
+    @Column(name = "alpaca_id", unique = true)
+    private String alpacaOrderId;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private OrderStatus orderStatus;
 
+    @Column(name = "limit_price")
+    private Float limitPrice;
+
     @Column(name = "requires_signature")
     private Boolean requiresSignature;
+
+    @Column(name = "signed_by")
+    private Integer signedBy;
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
@@ -67,40 +52,81 @@ public class Order {
     @Column(name = "sent_to_alpaca_at")
     private LocalDateTime sentToAlpacaAt;
 
-    @Column(name = "signed_by")
-    private Integer signedBy;
-
     @Column(name = "sent_to_alpaca")
     private boolean sentToAlpaca;
+
+    @Column(name = "filled_price")
+    private float filled_price; //Total por acciones
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "time_in_force", nullable = false)
+    private TimeInForceOrder timeInForce;
+
+    @Column(name = "stop_price")
+    private Float stopPrice;
+
+    @Column(name = "platform_commission")
+    private float platformCommission; // comision de la plataforma
+
+    @Column(name = "broker_commission")
+    private float brokerCommission; //comision del broker
+
+    @Column(name = "total_amount_paid")
+    private float totalAmountPaid; // Precio total pagado
 
     @Column(name = "alpaca_sended_status")
     private String alpacaStatus;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name="initiated_by")
+    private Role initiatedBy;
 
-    public Order(Integer orderId, String alpacaOrderId, Integer userId, OrderType orderType, String symbol, Integer quantity, TimeInForceOrder timeInForce, Float limitPrice, Float stopPrice, float filled_price, float totalAmountPaid, float platformCommission, float brokerCommission, OrderStatus orderStatus, Boolean requiresSignature, LocalDateTime createdAt, LocalDateTime sentToAlpacaAt, Integer signedBy, boolean sentToAlpaca, String alpacaStatus) {
+    @Column(name = "stockbroker_id")
+    private Integer stockbrokerId;
+
+
+    public Order(Integer orderId, Integer userId, String symbol, Integer quantity, OrderType orderType, String alpacaOrderId, OrderStatus orderStatus, Float limitPrice, Boolean requiresSignature, Integer signedBy, LocalDateTime createdAt, LocalDateTime sentToAlpacaAt, boolean sentToAlpaca, float filled_price, TimeInForceOrder timeInForce, Float stopPrice, float platformCommission, float brokerCommission, float totalAmountPaid, String alpacaStatus, Role initiatedBy, Integer stockbrokerId) {
         this.orderId = orderId;
-        this.alpacaOrderId = alpacaOrderId;
         this.userId = userId;
-        this.orderType = orderType;
         this.symbol = symbol;
         this.quantity = quantity;
-        this.timeInForce = timeInForce;
-        this.limitPrice = limitPrice;
-        this.stopPrice = stopPrice;
-        this.filled_price = filled_price;
-        this.totalAmountPaid = totalAmountPaid;
-        this.platformCommission = platformCommission;
-        this.brokerCommission = brokerCommission;
+        this.orderType = orderType;
+        this.alpacaOrderId = alpacaOrderId;
         this.orderStatus = orderStatus;
+        this.limitPrice = limitPrice;
         this.requiresSignature = requiresSignature;
+        this.signedBy = signedBy;
         this.createdAt = createdAt;
         this.sentToAlpacaAt = sentToAlpacaAt;
-        this.signedBy = signedBy;
         this.sentToAlpaca = sentToAlpaca;
+        this.filled_price = filled_price;
+        this.timeInForce = timeInForce;
+        this.stopPrice = stopPrice;
+        this.platformCommission = platformCommission;
+        this.brokerCommission = brokerCommission;
+        this.totalAmountPaid = totalAmountPaid;
         this.alpacaStatus = alpacaStatus;
+        this.initiatedBy = initiatedBy;
+        this.stockbrokerId = stockbrokerId;
+    }
+
+    public Integer getStockbrokerId() {
+        return stockbrokerId;
+    }
+
+    public void setStockbrokerId(Integer stockbrokerId) {
+        this.stockbrokerId = stockbrokerId;
     }
 
     public Order() {
+    }
+
+    public Role getInitiatedBy() {
+        return initiatedBy;
+    }
+
+    public void setInitiatedBy(Role initiatedBy) {
+        this.initiatedBy = initiatedBy;
     }
 
     public boolean isSentToAlpaca() {

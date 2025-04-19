@@ -3,11 +3,10 @@ package com.unbosque.edu.co.forest.service;
 import com.unbosque.edu.co.forest.exception.CustomAlpacaException;
 import com.unbosque.edu.co.forest.model.dto.OrderRequestDTO;
 import com.unbosque.edu.co.forest.model.dto.StockDTO;
-import com.unbosque.edu.co.forest.model.dto.UserDTO;
 import com.unbosque.edu.co.forest.model.dto.UserSessionDTO;
 import com.unbosque.edu.co.forest.model.entity.Order;
-import com.unbosque.edu.co.forest.model.enums.OrderStatus;
-import com.unbosque.edu.co.forest.model.enums.OrderType;
+import com.unbosque.edu.co.forest.model.entity.Transaction;
+import com.unbosque.edu.co.forest.model.enums.*;
 import com.unbosque.edu.co.forest.repository.OrderRepository;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,6 +19,7 @@ import org.springframework.web.client.RestClientException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class OrderService {
@@ -39,75 +39,116 @@ public class OrderService {
     private final RestTemplate restTemplate;
     private final OrderRepository orderRepository;
 
-    public OrderService(@Qualifier("brokerRestTemplate") RestTemplate restTemplate, OrderRepository orderRepository) {
+    private final UserService userService;
+    private final TransactionService transactionService;
+
+    public OrderService(@Qualifier("brokerRestTemplate") RestTemplate restTemplate, OrderRepository orderRepository, UserService userService, TransactionService transactionService) {
         this.restTemplate = restTemplate;
         this.orderRepository = orderRepository;
+        this.userService = userService;
+        this.transactionService = transactionService;
     }
 
     public Order createBuyOrder(OrderRequestDTO request) {
 
         StockDTO stock = request.getStock();
         UserSessionDTO user = request.getUser();
+
         float pricePerStock = stock.getCurrentPrice();
         int quantity = request.getQuantity();
         float total = pricePerStock * quantity;
-        float commision = total * commissionPercentage;
-        float platformCommission = Math.round(commision * 100.0f) / 100.0f;
-
-        float finalAmount = total + platformCommission;
-
-
-
-        Map<String, Object> bodyOrder = buildAlpacaOrderBody(request);
-        HttpHeaders headers = buildAlpacaHeaders();
-        HttpEntity<Map<String, Object>> httpEntity = new HttpEntity<>(bodyOrder, headers);
-
-        try {
-            // Comprobar capacidad de pago
-            Map<String, Object> responseBodyBuyingPower = getBuyingPower(user.getAlpacaAccountId(), headers);
-            float buyingPower = responseBodyBuyingPower.get("buying_power") != null
-                    ? Float.parseFloat(responseBodyBuyingPower.get("buying_power").toString())
-                    : 0;
+        float platformCommission = Math.round(total * commissionPercentage * 100.0f) / 100.0f;
+        float totalWithCommission  = total + platformCommission;
+        float stockbrokerCommission = 0f;
+        OrderStatus status = OrderStatus.SENDED;
+        Integer stockbrokerId = null;
+        Role initiatedBy = Role.INVESTOR;
+        TransactionStatus transactionStatus = TransactionStatus.PENDING;
 
 
+        // Validar balance disponible
+        userService.validateBalance(user.getUserId(), totalWithCommission );
 
-            if (buyingPower < finalAmount) {
-                throw new CustomAlpacaException(400, "Insufficient buying power to complete the order and pay the platform commission.");
-            }
+        // Validar si requiere firma (Lo envio un usuario y debe aprobar comisionista)
+        if (Boolean.TRUE.equals(request.isRequiresSignature())) {
+           // definir aqui stockbroker comision
+            return savePendingApprovalOrder(request, OrderStatus.PENDING_BROKER, initiatedBy, null, total, totalWithCommission, platformCommission,stockbrokerCommission);
 
-            // Enviar orden a Alpaca
-
-            Map<String, Object> responseBodyOrder = sendOrderToAlpaca(user.getAlpacaAccountId(), httpEntity);
-            String alpacaOrderId = (String) responseBodyOrder.get("id");
-
-            //Obtener ultimo estado de la orden
-            Map<String, Object> updatedOrder = getAlpacaOrderStatus(user.getAlpacaAccountId(), alpacaOrderId, headers);
-            String updatedStatus = (String) updatedOrder.get("status");
-
-
-
-            Map<String, Object> transferOutgoing = makeTransferOutgoing(user.getAlpacaAccountId(), headers, user.getBankRelationshipId(), platformCommission, alpacaOrderId);
-
-            float filledPrice = updatedOrder.get("filled_avg_price") != null
-                    ? Float.parseFloat(updatedOrder.get("filled_avg_price").toString())
-                    : 0;
-
-            float finalFilledPrice = "filled".equalsIgnoreCase(updatedStatus) && filledPrice > 0
-                    ? filledPrice * quantity
-                    : total;
-
-            float finalAmountPaid = finalFilledPrice + platformCommission;
-
-            return saveOrderInDatabase(request, alpacaOrderId, updatedStatus.toUpperCase(), finalFilledPrice, finalAmountPaid, platformCommission, null);
-        } catch (HttpClientErrorException | HttpServerErrorException ex) {
-            String responseMessage = ex.getResponseBodyAsString();
-            throw new CustomAlpacaException(ex.getRawStatusCode(), responseMessage);
-        } catch (RestClientException ex) {
-            throw new CustomAlpacaException(500, "Error al conectar con Alpaca: " + ex.getMessage());
+        } //valida si es enviada por comisionista
+        else if(request.getBrokerId() != null){
+            //definir aqui comision
+            return savePendingApprovalOrder(request, OrderStatus.PENDING_INVESTOR, Role.STOCKBROKER, request.getBrokerId(), total, totalWithCommission, platformCommission,stockbrokerCommission);
         }
+        // Si no requiere ninguna aprobacion
+        else {
+
+            Map<String, Object> bodyOrder = buildAlpacaOrderBody(request);
+            HttpHeaders headers = buildAlpacaHeaders();
+
+            try {
+
+                // Enviar orden a Alpaca
+
+                Map<String, Object> responseBodyOrder = sendOrderToAlpaca(user.getAlpacaAccountId(), new HttpEntity<>(bodyOrder, headers));
+                String alpacaOrderId = (String) responseBodyOrder.get("id");
+
+                //Obtener ultimo estado de la orden
+                Map<String, Object> updatedOrder = getAlpacaOrderStatus(user.getAlpacaAccountId(), alpacaOrderId, headers);
+                String updatedStatus = (String) updatedOrder.get("status");
+
+                // Si se ejecuto al instante, se generan transacciones y descuento de saldo
+
+                if ("filled".equalsIgnoreCase(updatedStatus)) {
+                    float filledPricePerStock = Optional.ofNullable(updatedOrder.get("filled_avg_price"))
+                            .map(Object::toString)
+                            .map(Float::parseFloat)
+                            .orElse(pricePerStock);
+
+                    total = filledPricePerStock * quantity;
+                    platformCommission = Math.round(total * commissionPercentage * 100.0f) / 100.0f;
+                    totalWithCommission = total + platformCommission;
+                    transactionStatus = TransactionStatus.CONFIRMED;
+
+                }
+
+                userService.subtractFromBalance(user.getUserId(), totalWithCommission);
+
+                Order orderSaved = buildAndSaveOrder(
+                        true,
+                        LocalDateTime.now(),
+                        status,
+                        request,
+                        alpacaOrderId,
+                        updatedStatus.toUpperCase(),
+                        total,
+                        totalWithCommission ,
+                        platformCommission,
+                        0f, // aún no calculamos comisión comisionista
+                        initiatedBy,
+                        stockbrokerId
+                );
+
+                handleTransactions(orderSaved, total, platformCommission, transactionStatus, stock.getSymbol(), quantity);
+
+
+                // Guardar orden no ejecutada al instante
+                return orderSaved;
+
+            } catch (HttpClientErrorException | HttpServerErrorException ex) {
+                String responseMessage = ex.getResponseBodyAsString();
+                throw new CustomAlpacaException(ex.getRawStatusCode(), responseMessage);
+            } catch (RestClientException ex) {
+                throw new CustomAlpacaException(500, "Error al conectar con Alpaca: " + ex.getMessage());
+            }
+        }
+
+
     }
 
-    private Map<String, Object> buildAlpacaOrderBody (OrderRequestDTO request) {
+
+
+
+    private Map<String, Object> buildAlpacaOrderBody(OrderRequestDTO request) {
         Map<String, Object> bodyOrder = new HashMap<>();
         bodyOrder.put("symbol", request.getStock().getSymbol());
         bodyOrder.put("qty", request.getQuantity());
@@ -155,62 +196,37 @@ public class OrderService {
         ).getBody();
     }
 
-    private Map<String, Object> getBuyingPower(String accountId, HttpHeaders headers){
-        return restTemplate.exchange(
-                alpacaApiUrl + "/v1/trading/accounts/" + accountId+"/account",
-                HttpMethod.GET,
-                new HttpEntity<>(headers),
-                Map.class
-        ).getBody();
+
+    private Order buildAndSaveOrder(boolean sendToAlpaca, LocalDateTime sendToAlpacaAt, OrderStatus orderStatus, OrderRequestDTO request, String alpacaOrderId, String alpacaStatus, float filledPrice, float finalAmountPaid, float platformCommission, Float brokerCommission, Role initiatedBy, Integer stockbrokerId) {
+            StockDTO stock = request.getStock();
+            int quantity = request.getQuantity();
+
+            Order order = new Order(null, request.getUser().getUserId(), stock.getSymbol(), quantity, request.getOrderType(), alpacaOrderId, orderStatus, request.getLimitPrice(), request.isRequiresSignature(), null, LocalDateTime.now(),  sendToAlpacaAt, sendToAlpaca, filledPrice, request.getTimeInForce(), request.getStopPrice(), platformCommission, brokerCommission, finalAmountPaid, alpacaStatus, initiatedBy, stockbrokerId );
+            return orderRepository.save(order);
     }
 
-    private Map<String, Object> makeTransferOutgoing(String accountId, HttpHeaders headers, String bankRelationshipId, float platformCommission, String orderId) {
-        Map<String, Object> transferBody = new HashMap<>();
-        transferBody.put("transfer_type", "ach");
-        transferBody.put("relationship_id", bankRelationshipId);
-        transferBody.put("amount", platformCommission);
-        transferBody.put("direction", "OUTGOING");
-        transferBody.put("timing", "immediate");
-       // transferBody.put("additional_information", "Pay per comissions");
-        //transferBody.put("fee_payment_method", orderId);
+    private void handleTransactions(Order order, float total, float platformCommission, TransactionStatus status, String symbol, int quantity) {
 
-        HttpEntity<Map<String, Object>> transferEntity = new HttpEntity<>(transferBody, headers);
+        transactionService.createTransaction(new Transaction(
+                null, order.getUserId(), order.getOrderId(), -total,
+                TransactionType.BUY, "Compra de " + quantity + " acciones de " + symbol,
+                LocalDateTime.now(), status
+        ));
 
-        return restTemplate.postForEntity(
-                alpacaApiUrl + "/v1/accounts/" + accountId+ "/transfers",
-                transferEntity,
-                Map.class
-        ).getBody();
+        transactionService.createTransaction(new Transaction(
+                null, order.getUserId(), order.getOrderId(), -platformCommission,
+                TransactionType.COMMISSION_FT, "Comisión de la plataforma por compra de acciones",
+                LocalDateTime.now(), status
+        ));
     }
 
 
-    private Order saveOrderInDatabase(OrderRequestDTO request, String alpacaOrderId, String alpacaStatus, float filledPrice, float finalAmountPaid, float platformCommission, Float brokerCommission) {
-        StockDTO stock = request.getStock();
-        int quantity = request.getQuantity();
-
-        Order order = new Order();
-        order.setSentToAlpaca(true);
-        order.setAlpacaStatus(alpacaStatus);
-        order.setFilled_price(filledPrice);
-        order.setAlpacaOrderId(alpacaOrderId);
-        order.setUserId(request.getUser().getUserId());
-        order.setOrderType(request.getOrderType());
-        order.setSymbol(stock.getSymbol());
-        order.setQuantity(quantity);
-        order.setTimeInForce(request.getTimeInForce());
-        order.setLimitPrice(request.getLimitPrice());
-        order.setStopPrice(request.getStopPrice());
-        order.setTotalAmountPaid(finalAmountPaid);
-        order.setPlatformCommission(platformCommission);
-        order.setBrokerCommission(brokerCommission);
-        order.setOrderStatus(OrderStatus.SENDED);
-        order.setRequiresSignature(false);
-        order.setCreatedAt(LocalDateTime.now());
-        order.setSentToAlpacaAt(LocalDateTime.now());
-        order.setSignedBy(null);
-
-        return orderRepository.save(order);
+    private Order savePendingApprovalOrder(OrderRequestDTO request, OrderStatus status, Role initiatedBy, Integer brokerId,
+                                           float total, float totalWithCommission, float platformCommission, float brokerCommission) {
+        return buildAndSaveOrder(false, null, status, request, null, null, total, totalWithCommission,
+                platformCommission, brokerCommission, initiatedBy, brokerId);
     }
+
 
 
 

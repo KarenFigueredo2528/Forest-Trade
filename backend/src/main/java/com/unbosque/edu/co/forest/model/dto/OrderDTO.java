@@ -2,6 +2,7 @@ package com.unbosque.edu.co.forest.model.dto;
 
 import com.unbosque.edu.co.forest.model.enums.OrderStatus;
 import com.unbosque.edu.co.forest.model.enums.OrderType;
+import com.unbosque.edu.co.forest.model.enums.Role;
 import com.unbosque.edu.co.forest.model.enums.TimeInForceOrder;
 
 import java.time.LocalDateTime;
@@ -29,10 +30,12 @@ public class OrderDTO {
     private Integer signedBy;
     private String alpacaStatus;
     private boolean sentToAlpaca;
+    private Role initiatedBy;
+    private Integer stockbrokerId;
 
     public OrderDTO() {}
 
-    public OrderDTO(Integer orderId, String alpacaOrderId, Integer userId, OrderType orderType, String symbol, Integer quantity, TimeInForceOrder timeInForce, Float limitPrice, Float stopPrice, float filledPrice, float totalAmountPaid, float pricePerStock, float platformCommission, float brokerCommission, OrderStatus orderStatus, Boolean requiresSignature, LocalDateTime createdAt, LocalDateTime sentToAlpacaAt, Integer signedBy, String alpacaStatus, boolean sentToAlpaca) {
+    public OrderDTO(Integer orderId, String alpacaOrderId, Integer userId, OrderType orderType, String symbol, Integer quantity, TimeInForceOrder timeInForce, Float limitPrice, Float stopPrice, float filledPrice, float totalAmountPaid, float pricePerStock, float platformCommission, float brokerCommission, OrderStatus orderStatus, Boolean requiresSignature, LocalDateTime createdAt, LocalDateTime sentToAlpacaAt, Integer signedBy, String alpacaStatus, boolean sentToAlpaca, Role initiatedBy, Integer stockbrokerId) {
         this.orderId = orderId;
         this.alpacaOrderId = alpacaOrderId;
         this.userId = userId;
@@ -54,6 +57,24 @@ public class OrderDTO {
         this.signedBy = signedBy;
         this.alpacaStatus = alpacaStatus;
         this.sentToAlpaca = sentToAlpaca;
+        this.initiatedBy = initiatedBy;
+        this.stockbrokerId = stockbrokerId;
+    }
+
+    public Integer getStockbrokerId() {
+        return stockbrokerId;
+    }
+
+    public void setStockbrokerId(Integer stockbrokerId) {
+        this.stockbrokerId = stockbrokerId;
+    }
+
+    public Role getInitiatedBy() {
+        return initiatedBy;
+    }
+
+    public void setInitiatedBy(Role initiatedBy) {
+        this.initiatedBy = initiatedBy;
     }
 
     public boolean isSentToAlpaca() {

@@ -22,6 +22,7 @@ public class UserDTO {
     private String alpacaAccountId;
     private Integer dailyOrderLimit;
     private OrderType defaultOrderType;
+    private Float balance;
 
     public UserDTO() {
     }
@@ -47,6 +48,15 @@ public class UserDTO {
     }
 
     // Getters and setters...
+
+
+    public Float getBalance() {
+        return balance;
+    }
+
+    public void setBalance(Float balance) {
+        this.balance = balance;
+    }
 
     public Integer getId() {
         return id;

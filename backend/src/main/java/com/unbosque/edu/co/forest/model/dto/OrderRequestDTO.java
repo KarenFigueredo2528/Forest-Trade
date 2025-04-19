@@ -13,6 +13,20 @@ public class OrderRequestDTO {
     private Float stopPrice;
     private boolean requiresSignature;
     private StockDTO stock;
+    private Integer brokerId;
+
+
+    public void setStopPrice(Float stopPrice) {
+        this.stopPrice = stopPrice;
+    }
+
+    public Integer getBrokerId() {
+        return brokerId;
+    }
+
+    public void setBrokerId(Integer brokerId) {
+        this.brokerId = brokerId;
+    }
 
     public UserSessionDTO getUser() {
         return user;
@@ -46,21 +60,18 @@ public class OrderRequestDTO {
         this.timeInForce = timeInForce;
     }
 
-    public float getLimitPrice() {
+    public Float getLimitPrice() {
         return limitPrice;
     }
 
-    public void setLimitPrice(float limitPrice) {
+    public void setLimitPrice(Float limitPrice) {
         this.limitPrice = limitPrice;
     }
 
-    public float getStopPrice() {
+    public Float getStopPrice() {
         return stopPrice;
     }
 
-    public void setStopPrice(float stopPrice) {
-        this.stopPrice = stopPrice;
-    }
 
     public boolean isRequiresSignature() {
         return requiresSignature;
