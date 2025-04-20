@@ -46,14 +46,8 @@ public class UserController {
 
         System.out.println(" Request: " + request.toString() );
         try {
-            UserDTO user = service.loginUser(request.getEmail(), request.getPassword());
-
-            System.out.println("Usuario que intentó loggear: " + user.toString() + " Request: " + request.getEmail() + request.getPassword() );
-
-            LoginResponse response = new LoginResponse(jwtUtil.generateToken(user), false);
-
+            LoginResponse response = service.loginUser(request.getEmail(), request.getPassword());
             return ResponseEntity.ok(response);
-
         } catch (RuntimeException e) {
             LoginResponse errorResponse = new LoginResponse(e.getMessage());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);

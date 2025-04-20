@@ -1,10 +1,12 @@
 package com.unbosque.edu.co.forest.service;
 
+import com.unbosque.edu.co.forest.model.dto.LoginResponse;
 import com.unbosque.edu.co.forest.model.dto.UserDTO;
 import com.unbosque.edu.co.forest.model.entity.User;
 import com.unbosque.edu.co.forest.model.enums.AccountStatus;
 import com.unbosque.edu.co.forest.model.enums.Role;
 import com.unbosque.edu.co.forest.repository.UserRepository;
+import com.unbosque.edu.co.forest.security.JwtUtil;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,12 +21,14 @@ public class UserService {
     private final BCryptPasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
+    private JwtUtil jwtUtil;
 
     @Autowired
-    public UserService(UserRepository userRepository, ModelMapper modelMapper) {
+    public UserService(UserRepository userRepository, ModelMapper modelMapper, JwtUtil jwtUtil) {
         this.userRepository = userRepository;
         this.modelMapper = modelMapper;
         this.passwordEncoder = new BCryptPasswordEncoder();
+        this.jwtUtil = jwtUtil;
     }
 
     public UserDTO getUserById(Integer id) {
@@ -64,7 +68,7 @@ public class UserService {
         return modelMapper.map(savedUser, UserDTO.class);
     }
 
-    public UserDTO loginUser(String email, String rawPassword) {
+    public LoginResponse loginUser(String email, String rawPassword) {
         User user = userRepository.findUserByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Correo no registrado"));
 
@@ -73,8 +77,12 @@ public class UserService {
         }
 
         UserDTO dto = modelMapper.map(user, UserDTO.class);
-        dto.setPasswordHash(null); 
-        return dto;
+        dto.setPasswordHash(null);
+
+        // Consulta
+
+        LoginResponse response = new LoginResponse(jwtUtil.generateToken(dto), false);
+        return response;
     }
 
     public boolean emailExists(String email) {
